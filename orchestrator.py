@@ -12,9 +12,10 @@ from generators.ticket_generator import TicketGenerator
 from generators.interaction_generator import InteractionGenerator
 from generators.call_chat_generator import CallGenerator, ChatGenerator
 from generators.wfm_generator import WfmGenerator
+from generators.qa_generator import QaGenerator
 from analysis.metrics import DataAnalyzer
 from utils.data_exporter import DataExporter
-from models.entities import User, Customer, Ticket, Interaction, Call, Chat, WfmEntry
+from models.entities import User, Customer, Ticket, Interaction, Call, Chat, WfmEntry, QaEntry
 
 
 class DataGenerationOrchestrator:
@@ -40,6 +41,7 @@ class DataGenerationOrchestrator:
         self.call_generator = CallGenerator(self.config)
         self.chat_generator = ChatGenerator(self.config)
         self.wfm_generator = WfmGenerator(self.config)
+        self.qa_generator = QaGenerator(self.config)
 
     
     def generate_all(self, output_format: str = 'dataframe') -> Dict[str, Union[pd.DataFrame, List[Any]]]:
@@ -112,6 +114,20 @@ class DataGenerationOrchestrator:
             'wfm': wfm_df
         }
 
+        print("9. Generating QA data...")
+        qa_df = self.qa_generator.generate(interactions_df)
+
+        datasets = {
+            'users': users_df,
+            'customers': customers_df,
+            'tickets': tickets_df,
+            'interactions': interactions_df,
+            'calls': calls_df,
+            'chats': chats_df,
+            'wfm': wfm_df,
+            'qa': qa_df
+        }
+
 
         
         print("\nData generation completed!")
@@ -172,6 +188,20 @@ class DataGenerationOrchestrator:
             'chats': chats,
             'wfm': wfm
         }
+
+        print("9. Generating QA data...")
+        qa = self.qa_generator.generate_models(interactions_df)
+
+        datasets = {
+            'users': users,
+            'customers': customers,
+            'tickets': tickets,
+            'interactions': interactions,
+            'calls': calls,
+            'chats': chats,
+            'wfm': wfm,
+            'qa': qa
+        }
         
         print("\nData generation completed!")
         return datasets
@@ -194,7 +224,8 @@ class DataGenerationOrchestrator:
             'interactions': Interaction.to_dataframe(models['interactions']),
             'calls': Call.to_dataframe(models['calls']),
             'chats': Chat.to_dataframe(models['chats']),
-            'wfm': WfmEntry.to_dataframe(models['wfm'])
+            'wfm': WfmEntry.to_dataframe(models['wfm']),
+            'qa': QaEntry.to_dataframe(models['qa'])
 
         }
         
@@ -226,6 +257,8 @@ class DataGenerationOrchestrator:
                     dataframes[name] = Chat.to_dataframe(models_list)
                 elif name == 'wfm':
                     dataframes[name] = WfmEntry.to_dataframe(models_list)
+                elif name == 'qa':
+                    dataframes[name] = QaEntry.to_dataframe(models_list)
             
             self.exporter.export_to_csv(dataframes)
         else:
@@ -343,28 +376,46 @@ class DataGenerationOrchestrator:
 
         utilization_stats = self.wfm_generator.analyze_utilization_by_user(wfm)
         print(f"\nWFM data generated for {len(utilization_stats)} users")
-    
-    def validate_data_integrity(self, datasets: Dict[str, Union[pd.DataFrame, List[Any]]], 
-                               data_format: str = 'dataframe') -> bool:
-        """Validate data integrity across all datasets."""
-        print("\nValidating data integrity...")
-        
-        try:
-            if data_format == 'models':
-                self._validate_model_integrity(datasets)
-            else:
-                # Check foreign key relationships
-                self._validate_foreign_keys(datasets)
+
+        qa = datasets['qa']
+
+        # QA Analysis using QaEntry models
+        print("\n--- QA ANALYSIS (using models) ---")
+        qa_metrics = self.qa_generator.analyze_qa_metrics(qa)
+
+        if qa_metrics:
+            print(f"Total QA evaluations: {qa_metrics['total_evaluations']}")
+            print(f"Customer critical rate: {qa_metrics['customer_critical_rate']:.1%}")
+            print(f"Business critical rate: {qa_metrics['business_critical_rate']:.1%}")
+            print(f"Compliance critical rate: {qa_metrics['compliance_critical_rate']:.1%}")
+            print(f"Any critical flags rate: {qa_metrics['any_critical_rate']:.1%}")
+            print(f"Overall average QA score: {qa_metrics['overall_avg_score']:.2f}")
+            print(f"Average score (non-critical): {qa_metrics['avg_score_non_critical']:.2f}")
+            print(f"Perfect scores: {qa_metrics['perfect_score_count']}")
+        else:
+            print("No QA evaluations generated")
+            
+            def validate_data_integrity(self, datasets: Dict[str, Union[pd.DataFrame, List[Any]]], 
+                                    data_format: str = 'dataframe') -> bool:
+                """Validate data integrity across all datasets."""
+                print("\nValidating data integrity...")
                 
-                # Check data consistency
-                self._validate_data_consistency(datasets)
-            
-            print("✓ Data integrity validation passed")
-            return True
-            
-        except Exception as e:
-            print(f"✗ Data integrity validation failed: {e}")
-            return False
+                try:
+                    if data_format == 'models':
+                        self._validate_model_integrity(datasets)
+                    else:
+                        # Check foreign key relationships
+                        self._validate_foreign_keys(datasets)
+                        
+                        # Check data consistency
+                        self._validate_data_consistency(datasets)
+                    
+                    print("✓ Data integrity validation passed")
+                    return True
+                    
+                except Exception as e:
+                    print(f"✗ Data integrity validation failed: {e}")
+                    return False
     
     def _validate_model_integrity(self, datasets: Dict[str, List[Any]]) -> None:
         """Validate data integrity using dataclass models."""

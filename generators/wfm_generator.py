@@ -24,8 +24,12 @@ class WfmGenerator(BaseGenerator):
         for _, user_row in users_df.iterrows():
             user_id = user_row['id']
             fte = user_row['fte']
+            user_start_date = pd.to_datetime(user_row['start_date'])
+
+            # Get dates starting from user's start date
+            user_calendar_dates = self._get_calendar_dates_for_user(user_start_date)
             
-            for date in calendar_dates:
+            for date in user_calendar_dates:
                 # Check if it's a working day (Monday-Friday, not bank holiday)
                 is_working_day = self._is_working_day(date)
                 
@@ -195,3 +199,15 @@ class WfmGenerator(BaseGenerator):
         factor = max(0.1, min(1.0, factor))
         
         return factor
+    
+    def _get_calendar_dates_for_user(self, user_start_date: datetime) -> List[datetime]:
+        """Get calendar dates starting from user's start date."""
+        start_date = max(self.config.START_DATE, user_start_date)
+        dates = []
+        current_date = start_date
+        
+        while current_date <= self.config.END_DATE:
+            dates.append(current_date)
+            current_date += timedelta(days=1)
+        
+        return dates

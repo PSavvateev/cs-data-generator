@@ -19,7 +19,7 @@ The application generates 6 CSV files in the `exports/` folder:
 Contains support agent information.
 
 **Columns:**
-- `id`: Unique agent identifier (1-12)
+- `id`: Unique agent identifier
 - `first_name`: Agent's first name
 - `last_name`: Agent's last name  
 - `fte`: Full-time equivalent (0.75 or 1.0)
@@ -32,7 +32,7 @@ Contains support agent information.
 Contains agents specific working time metrics
 
 **Columns:**
--`date`: calendar date within agent's working period
+- `date`: calendar date within agent's working period
 - `user_id`: unique agent identifier
 - `paid_time`: paid time based on the number of FTEs of each agent (in minutes)
 - `scheduled_time`: scheduled work time (in minutes)
@@ -40,17 +40,17 @@ Contains agents specific working time metrics
 - `interactions_time`: time spend on interactions with customer and post-work (in minutes)
 - `productive_time`: interactions time + other productive activities (meetings, training, admin work)
 
-### 2.2 Customers Table (`customers_table.csv`)
+### 2.3 Customers Table (`customers_table.csv`)
 Contains customer information.
 
 **Columns:**
-- `id`: Unique customer identifier (1-6000)
+- `id`: Unique customer identifier
 - `name`: Customer full name
 - `email`: Customer email address
 - `phone`: Customer phone number
 - `country`: Customer country (UK, Germany, Austria, Netherlands, France, Belgium)
 
-### 2.3 Tickets Table (`tickets_table.csv`)
+### 2.4 Tickets Table (`tickets_table.csv`)
 Contains support ticket information.
 
 **Columns:**
@@ -70,7 +70,7 @@ Contains support ticket information.
 - `resolution_after_last_interaction_hours`: Hours from last interaction to closure
 - `lifecycle_hours`: Total ticket lifecycle in hours
 
-### 2.4 Interactions Table (`interactions_table.csv`)
+### 2.5 Interactions Table (`interactions_table.csv`)
 Contains individual customer-agent interactions.
 
 **Columns:**
@@ -86,7 +86,18 @@ Contains individual customer-agent interactions.
 - `body`: Interaction content (currently empty)
 - `ticket_id`: Associated ticket identifier
 
-### 2.5 Calls Table (`calls_table.csv`)
+### 2.6. QA Table (`qa_table.csv`)
+Contains quality assurance evaluations
+
+**Columns:**
+- `eval_id`: Unique evaluation identifier (QA-XXXXXX format) 
+- `interaction_id`: Interaction identfier
+- `qa_score`: Quality assurance score (0-1)
+- `customer_critical`: Customer critical error(s) flag (1 or 0)
+- `business_critical`: Business critical error(s) flag (1 or 0)
+- `compliance_critical`: Complience critical error(s) flag (1 or 0)
+
+### 2.7 Calls Table (`calls_table.csv`)
 Contains phone call data including abandoned calls.
 
 **Columns:**
@@ -96,7 +107,7 @@ Contains phone call data including abandoned calls.
 - `abandoned`: Call abandonment timestamp (null if answered)
 - `is_abandoned`: Abandonment flag (0 or 1)
 
-### 2.6 Chats Table (`chats_table.csv`)
+### 2.8 Chats Table (`chats_table.csv`)
 Contains chat session data including abandoned chats.
 
 **Columns:**
@@ -128,9 +139,9 @@ USERS (1) ←→ (∞) TICKETS
  Agent            Owner
           
               
-USERS (1) ←→ (∞) INTERACTIONS
-  ↓              ↓
- Agent         Handler
+USERS (1) ←→ (∞) INTERACTIONS (1) ←→ (∞) QA_ENTRIES
+  ↓              ↓                          ↓
+ Agent         Handler                   QA Score
 
 USERS (1) ←→ (∞) WFM_ENTRIES
   ↓              ↓
@@ -147,6 +158,7 @@ CHATS (chat channel only) - independent
 - Each **interaction** belongs to one **ticket** and is handled by one **user**
 - Each **customer** belongs to one **interaction**
 - Each **wfm entry** belongs to one **user**
+- Each **qa entry** belongs to one **interaction**
 - **Calls** and **chats** are generated from phone and chat **interactions** respectively
 - **FCR tickets** have exactly 1 interaction; others have multiple based on symptom category
 - **Abandoned calls/chats** are additional records not linked to tickets
@@ -193,34 +205,18 @@ CHATS (chat channel only) - independent
 
 1. **Clone or download the project files**
 
-2. **Install dependencies:**
+2. **Setup virtual environment**
 ```bash
-pip install pandas numpy faker openpyxl
-```
 
-3. **Set up directory structure:**
+python -m venv venv
+python venv/Scripts/activate
+
 ```
-data_generator/
-├── main.py
-├── orchestrator.py
-├── utils.py
-├── config/
-│   ├── __init__.py
-│   └── settings.py
-├── generators/
-│   ├── __init__.py
-│   ├── base_generator.py
-│   ├── user_generator.py
-│   ├── customer_generator.py
-│   ├── ticket_generator.py
-│   ├── interaction_generator.py
-│   └── call_chat_generator.py
-├── models/
-│   ├── __init__.py
-│   └── entities.py
-└── analysis/
-    ├── __init__.py
-    └── metrics.py
+3. **Install dependencies:**
+```bash
+
+pip install -r requirements.txt
+
 ```
 
 ### 4.3 How to Change Parameters
@@ -251,7 +247,7 @@ python main.py
 
 **Output:**
 - Creates `exports/` folder automatically
-- Generates 6 CSV files in `exports/` folder
+- Generates 8 CSV files in `exports/` folder
 - Displays generation statistics and analysis in console
 - Typical runtime: 30-60 seconds for default dataset size
 
@@ -275,8 +271,9 @@ data_generator/
 │   ├── customer_generator.py  # Customer data
 │   ├── ticket_generator.py    # Support ticket data
 │   ├── interaction_generator.py # Customer-agent interactions
-│   └── call_chat_generator.py # Call and chat channel data
-|   |__ wfm_generator          # WFM data
+│   ├── call_chat_generator.py # Call and chat channel data
+│   ├── wfm_generator          # WFM data
+│   └── qa_generator           # QA data
 ├── models/                    # Data model definitions
 │   ├── __init__.py
 │   └── entities.py            # Dataclass models for type safety
@@ -304,11 +301,11 @@ data_generator/
 ## 6. Tech Stack
 
 ### 6.1 Core Dependencies
-- **Python 3.7+**: Programming language
+- **Python 3.13+**
 - **pandas**: Data manipulation and CSV export
 - **numpy**: Statistical distributions and numerical operations
 - **faker**: Realistic fake data generation (names, emails, addresses)
-- **openpyxl**: Excel file export support (optional)
+
 
 ### 6.2 Design Patterns
 - **Factory Pattern**: For creating data models

@@ -75,6 +75,13 @@ class Config:
 
     # WFM parameters
     WFM_PARAMS: Dict[str, Dict[str, float]] = None
+
+    # QA (Quality Assurance) parameters
+    SAMPLE_SIZE: float = 0.15  # 15% of interactions get QA evaluated
+    QA_SCORE_PARAMS: Dict[str, float] = None
+    CUSTOMER_CRITICAL_PROB: float = 0.08  # 8% probability
+    BUSINESS_CRITICAL_PROB: float = 0.05   # 5% probability  
+    COMPLIANCE_CRITICAL_PROB: float = 0.03 # 3% probability
     
     def __post_init__(self):
         """Initialize default values that can't be set as class defaults."""
@@ -206,4 +213,12 @@ class Config:
                 'shrinkage': {'mean': 0.85, 'deviation': 0.05},     # Available time factor
                 'occupancy': {'mean': 0.75, 'deviation': 0.08},    # Interactions time factor  
                 'utilization': {'mean': 0.70, 'deviation': 0.06}   # Productive time factor
+            }
+
+        if self.QA_SCORE_PARAMS is None:
+            self.QA_SCORE_PARAMS = {
+                'mean': 0.95,
+                'max': 1.00, 
+                'std': 0.07,
+                'min': 0.0  # Adding min for completeness
             }

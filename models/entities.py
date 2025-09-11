@@ -215,6 +215,44 @@ class WfmEntry:
     def is_weekend_or_holiday(self) -> bool:
         """Check if this entry is for a weekend or holiday."""
         return self.scheduled_time is None
+    
+@dataclass
+class QaEntry:
+    """Model for Quality Assurance evaluation data."""
+    eval_id: str
+    interaction_id: str  # Foreign key to interactions_table.interaction_id
+    qa_score: float
+    customer_critical: int  # 1/0 flag
+    business_critical: int  # 1/0 flag
+    compliance_critical: int  # 1/0 flag
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for DataFrame creation."""
+        return asdict(self)
+    
+    @classmethod
+    def to_dataframe(cls, qa_entries: List['QaEntry']) -> pd.DataFrame:
+        """Convert list of QaEntry objects to DataFrame."""
+        return pd.DataFrame([entry.to_dict() for entry in qa_entries])
+    
+    def has_critical_flags(self) -> bool:
+        """Check if any critical flags are set."""
+        return any([self.customer_critical, self.business_critical, self.compliance_critical])
+    
+    def is_perfect_score(self) -> bool:
+        """Check if QA score is perfect (1.0)."""
+        return self.qa_score == 1.0
+    
+    def get_critical_types(self) -> List[str]:
+        """Get list of critical flag types that are set."""
+        critical_types = []
+        if self.customer_critical:
+            critical_types.append('customer')
+        if self.business_critical:
+            critical_types.append('business')
+        if self.compliance_critical:
+            critical_types.append('compliance')
+        return critical_types
 
 # Utility functions for model validation
 class ModelValidator:
@@ -304,6 +342,30 @@ class ModelValidator:
                 errors.append("Weekend/holiday should have None for productive_time")
         
         return errors
+    
+    @staticmethod
+    def validate_qa_entry(qa_entry: QaEntry) -> List[str]:
+        """Validate QA entry data and return list of errors."""
+        errors = []
+        
+        # Check QA score is within valid range
+        if qa_entry.qa_score < 0.0 or qa_entry.qa_score > 1.0:
+            errors.append(f"Invalid qa_score: {qa_entry.qa_score}. Must be between 0.0 and 1.0.")
+        
+        # Check critical flags are 0 or 1
+        for field_name, field_value in [
+            ('customer_critical', qa_entry.customer_critical),
+            ('business_critical', qa_entry.business_critical),
+            ('compliance_critical', qa_entry.compliance_critical)
+        ]:
+            if field_value not in [0, 1]:
+                errors.append(f"Invalid {field_name}: {field_value}. Must be 0 or 1.")
+        
+        # Check business rule: if any critical flag is set, qa_score must be 0
+        if qa_entry.has_critical_flags() and qa_entry.qa_score != 0.0:
+            errors.append("QA score must be 0.0 when any critical flag is set.")
+        
+        return errors
 
 
 # Factory classes for creating models
@@ -334,3 +396,8 @@ class ModelFactory:
     def create_wfm_entry_from_dict(data: Dict[str, Any]) -> WfmEntry:
         """Create WfmEntry model from dictionary."""
         return WfmEntry(**data)
+    
+    @staticmethod
+    def create_qa_entry_from_dict(data: Dict[str, Any]) -> QaEntry:
+        """Create QaEntry model from dictionary."""
+        return QaEntry(**data)
