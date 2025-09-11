@@ -6,7 +6,7 @@ This application generates realistic synthetic customer support data for demo an
 
 The generator produces statistically realistic data with configurable business rules, ensuring that relationships between entities (customers, tickets, interactions) follow real-world patterns. This makes it ideal for:
 
-- Testing customer support analytics dashboards
+- Testing and demo customer support analytics dashboards
 - Training machine learning models on support data
 - Demonstrating customer service KPIs and metrics
 - Creating sample datasets for business intelligence tools
@@ -27,6 +27,18 @@ Contains support agent information.
 - `start_date`: Agent start date (YYYY-MM-DD)
 - `status`: Employment status (always "active")
 - `hourly_rate_eur`: Hourly rate in EUR (12-16 EUR based on experience)
+
+### 2.2 WFM Tabe (`wfm_table.csv`)
+Contains agents specific working time metrics
+
+**Columns:**
+-`date`: calendar date within agent's working period
+- `user_id`: unique agent identifier
+- `paid_time`: paid time based on the number of FTEs of each agent (in minutes)
+- `scheduled_time`: scheduled work time (in minutes)
+- `available_time`: time of agent being actually available to work (scheduled time - breaks - non presence) (in minutes)
+- `interactions_time`: time spend on interactions with customer and post-work (in minutes)
+- `productive_time`: interactions time + other productive activities (meetings, training, admin work)
 
 ### 2.2 Customers Table (`customers_table.csv`)
 Contains customer information.
@@ -94,31 +106,47 @@ Contains chat session data including abandoned chats.
 - `abandoned`: Chat abandonment timestamp (null if answered)
 - `is_abandoned`: Abandonment flag (0 or 1)
 
+
 ### 2.7 Data Relationships
 
 ```
-CUSTOMERS (1) ←→ (∞) TICKETS (1) ←→ (∞) INTERACTIONS
-    ↓                    ↓                    ↓
- Country             Product              Channel
- Language            Status               Handle Time
-                     FCR                  Speed of Answer
+CUSTOMERS (1) ←→ (∞) INTERACTIONS
+    ↓                    ↓    
+ Country             Channel              
+ Language            Handle Time               
+                     Speed of Answer                  
+
+TICKETS (1) ←→ (∞) INTERACTIONS
+    ↓                    ↓                    
+ Product              Channel
+ Status               Handle Time
+ FCR                  Speed of Answer
+ Origin
                      
 USERS (1) ←→ (∞) TICKETS
   ↓              ↓
- FTE          Owner
- Rate         
+ Agent            Owner
+          
               
 USERS (1) ←→ (∞) INTERACTIONS
   ↓              ↓
  Agent         Handler
 
-INTERACTIONS → CALLS (phone channel only)
-INTERACTIONS → CHATS (chat channel only)
+USERS (1) ←→ (∞) WFM_ENTRIES
+  ↓              ↓
+ FTE          Scheduled Time
+                            
+
+
+CALLS (phone channel only) - independent
+CHATS (chat channel only) - independent
 ```
 
 **Key Relationships:**
-- Each **ticket** belongs to one **customer** and is owned by one **agent**
-- Each **interaction** belongs to one **ticket** and is handled by one **agent**
+- Each **ticket** belongs is owned by one **user**
+- Each **interaction** belongs to one **ticket** and is handled by one **user**
+- Each **customer** belongs to one **interaction**
+- Each **wfm entry** belongs to one **user**
 - **Calls** and **chats** are generated from phone and chat **interactions** respectively
 - **FCR tickets** have exactly 1 interaction; others have multiple based on symptom category
 - **Abandoned calls/chats** are additional records not linked to tickets
@@ -248,6 +276,7 @@ data_generator/
 │   ├── ticket_generator.py    # Support ticket data
 │   ├── interaction_generator.py # Customer-agent interactions
 │   └── call_chat_generator.py # Call and chat channel data
+|   |__ wfm_generator          # WFM data
 ├── models/                    # Data model definitions
 │   ├── __init__.py
 │   └── entities.py            # Dataclass models for type safety

@@ -24,7 +24,8 @@ class DataExporter:
             'tickets': 'tickets_table.csv',
             'interactions': 'interactions_table.csv',
             'calls': 'calls_table.csv',
-            'chats': 'chats_table.csv'
+            'chats': 'chats_table.csv',
+            'wfm': 'wfm_table.csv'
         }
         
         print(f"\n--- EXPORTING DATA TO CSV FILES (exports/) ---")

@@ -11,9 +11,10 @@ from generators.customer_generator import CustomerGenerator
 from generators.ticket_generator import TicketGenerator
 from generators.interaction_generator import InteractionGenerator
 from generators.call_chat_generator import CallGenerator, ChatGenerator
+from generators.wfm_generator import WfmGenerator
 from analysis.metrics import DataAnalyzer
 from utils.data_exporter import DataExporter
-from models.entities import User, Customer, Ticket, Interaction, Call, Chat
+from models.entities import User, Customer, Ticket, Interaction, Call, Chat, WfmEntry
 
 
 class DataGenerationOrchestrator:
@@ -38,6 +39,8 @@ class DataGenerationOrchestrator:
         self.interaction_generator = InteractionGenerator(self.config)
         self.call_generator = CallGenerator(self.config)
         self.chat_generator = ChatGenerator(self.config)
+        self.wfm_generator = WfmGenerator(self.config)
+
     
     def generate_all(self, output_format: str = 'dataframe') -> Dict[str, Union[pd.DataFrame, List[Any]]]:
         """
@@ -95,6 +98,21 @@ class DataGenerationOrchestrator:
             'calls': calls_df,
             'chats': chats_df
         }
+
+        print("8. Generating WFM data...")
+        wfm_df = self.wfm_generator.generate(users_df)
+
+        datasets = {
+            'users': users_df,
+            'customers': customers_df,
+            'tickets': tickets_df,
+            'interactions': interactions_df,
+            'calls': calls_df,
+            'chats': chats_df,
+            'wfm': wfm_df
+        }
+
+
         
         print("\nData generation completed!")
         return datasets
@@ -141,6 +159,19 @@ class DataGenerationOrchestrator:
             'calls': calls,
             'chats': chats
         }
+
+        print("8. Generating WFM data...")
+        wfm = self.wfm_generator.generate_models(users_df)
+
+        datasets = {
+            'users': users,
+            'customers': customers,
+            'tickets': tickets,
+            'interactions': interactions,
+            'calls': calls,
+            'chats': chats,
+            'wfm': wfm
+        }
         
         print("\nData generation completed!")
         return datasets
@@ -162,7 +193,9 @@ class DataGenerationOrchestrator:
             'tickets': Ticket.to_dataframe(models['tickets']),
             'interactions': Interaction.to_dataframe(models['interactions']),
             'calls': Call.to_dataframe(models['calls']),
-            'chats': Chat.to_dataframe(models['chats'])
+            'chats': Chat.to_dataframe(models['chats']),
+            'wfm': WfmEntry.to_dataframe(models['wfm'])
+
         }
         
         return {
@@ -191,6 +224,8 @@ class DataGenerationOrchestrator:
                     dataframes[name] = Call.to_dataframe(models_list)
                 elif name == 'chats':
                     dataframes[name] = Chat.to_dataframe(models_list)
+                elif name == 'wfm':
+                    dataframes[name] = WfmEntry.to_dataframe(models_list)
             
             self.exporter.export_to_csv(dataframes)
         else:
@@ -216,7 +251,8 @@ class DataGenerationOrchestrator:
         interactions = datasets['interactions']
         calls = datasets['calls']
         chats = datasets['chats']
-        
+        wfm = datasets['wfm']
+
         print("\n--- MODEL-BASED ANALYSIS ---")
         
         # FCR Analysis using Ticket models
@@ -284,6 +320,29 @@ class DataGenerationOrchestrator:
             status = "FCR" if ticket.is_fcr() else "Multi-contact"
             escalation = "Escalated" if ticket.is_escalated() else "Not escalated"
             print(f"  {ticket.ticket_id} - {ticket.symptom_cat} - {status} - {escalation}")
+
+        # WFM Analysis using WfmEntry models
+        print("\n--- WFM ANALYSIS (using models) ---")
+        wfm_working_days = [entry for entry in wfm if entry.is_working_day()]
+        wfm_weekends = [entry for entry in wfm if entry.is_weekend_or_holiday()]
+
+        print(f"Total WFM entries: {len(wfm)}")
+        print(f"Working day entries: {len(wfm_working_days)}")
+        print(f"Weekend/holiday entries: {len(wfm_weekends)}")
+
+        if wfm_working_days:
+            avg_scheduled = sum(entry.scheduled_time for entry in wfm_working_days) / len(wfm_working_days)
+            avg_available = sum(entry.available_time for entry in wfm_working_days) / len(wfm_working_days)
+            avg_interactions = sum(entry.interactions_time for entry in wfm_working_days) / len(wfm_working_days)
+            avg_productive = sum(entry.productive_time for entry in wfm_working_days) / len(wfm_working_days)
+            
+            print(f"Average scheduled time per working day: {avg_scheduled:.1f} minutes")
+            print(f"Average available time per working day: {avg_available:.1f} minutes")
+            print(f"Average interactions time per working day: {avg_interactions:.1f} minutes")
+            print(f"Average productive time per working day: {avg_productive:.1f} minutes")
+
+        utilization_stats = self.wfm_generator.analyze_utilization_by_user(wfm)
+        print(f"\nWFM data generated for {len(utilization_stats)} users")
     
     def validate_data_integrity(self, datasets: Dict[str, Union[pd.DataFrame, List[Any]]], 
                                data_format: str = 'dataframe') -> bool:

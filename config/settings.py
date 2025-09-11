@@ -72,6 +72,9 @@ class Config:
     
     # Speed of answer parameters
     SPEED_ANSWER_PARAMS: Dict[str, Tuple[float, float, float]] = None
+
+    # WFM parameters
+    WFM_PARAMS: Dict[str, Dict[str, float]] = None
     
     def __post_init__(self):
         """Initialize default values that can't be set as class defaults."""
@@ -196,4 +199,11 @@ class Config:
                 'email': (0.1, 50, 17),  # hours
                 'phone': (3, 360, 60),   # seconds
                 'chat': (5, 360, 85)     # seconds
+            }
+        
+        if self.WFM_PARAMS is None:
+            self.WFM_PARAMS = {
+                'shrinkage': {'mean': 0.85, 'deviation': 0.05},     # Available time factor
+                'occupancy': {'mean': 0.75, 'deviation': 0.08},    # Interactions time factor  
+                'utilization': {'mean': 0.70, 'deviation': 0.06}   # Productive time factor
             }

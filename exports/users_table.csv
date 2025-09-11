@@ -1,13 +1,13 @@
 id,first_name,last_name,fte,position,start_date,status,hourly_rate_eur
-1,Megan,Potts,0.75,support_agent,2022-08-17,active,13.56
-2,Nancy,Martinez,0.75,support_agent,2023-07-18,active,13.54
-3,Maria,Robinson,1.0,support_agent,2022-10-13,active,14.9
-4,Amanda,Campbell,1.0,support_agent,2022-06-28,active,14.76
-5,Brandon,Buck,1.0,support_agent,2022-03-07,active,13.79
-6,Barbara,Buchanan,1.0,support_agent,2023-03-24,active,13.67
-7,Alison,Brown,1.0,support_agent,2022-02-24,active,14.87
-8,Luis,Baker,1.0,support_agent,2024-05-09,active,13.08
-9,Mark,Lopez,1.0,support_agent,2023-07-24,active,14.66
-10,Jeffrey,Hardin,1.0,support_agent,2022-01-14,active,15.32
-11,Dr.,Matthew Larson,1.0,support_agent,2022-11-23,active,14.77
-12,Daniel,Hanson DDS,1.0,support_agent,2023-11-28,active,13.42
+1,Julian,Moyer,0.75,support_agent,2022-08-17,active,13.56
+2,Christopher,Lee,0.75,support_agent,2023-07-18,active,13.54
+3,Sandra,Barnes,1.0,support_agent,2022-10-13,active,14.9
+4,Jennifer,Estrada,1.0,support_agent,2022-06-28,active,14.76
+5,Michael,Barron Jr.,1.0,support_agent,2022-03-07,active,13.79
+6,Jacob,Hunt,1.0,support_agent,2023-03-24,active,13.67
+7,Anthony,Smith,1.0,support_agent,2022-02-24,active,14.87
+8,Nina,Richardson,1.0,support_agent,2024-05-09,active,13.08
+9,Kyle,Davis,1.0,support_agent,2023-07-24,active,14.66
+10,Curtis,Rodriguez,1.0,support_agent,2022-01-14,active,15.32
+11,Ian,Meyer,1.0,support_agent,2022-11-23,active,14.77
+12,Joseph,Simmons,1.0,support_agent,2023-11-28,active,13.42

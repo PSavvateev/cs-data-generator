@@ -188,6 +188,33 @@ class Chat:
             return (self.abandoned - self.initialized).total_seconds()
         return None
 
+@dataclass
+class WfmEntry:
+    """Model for Workforce Management data."""
+    date: str  # YYYY-MM-DD format
+    user_id: int
+    paid_time: Optional[float]
+    scheduled_time: Optional[float]
+    available_time: Optional[float]
+    interactions_time: Optional[float]
+    productive_time: Optional[float]
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for DataFrame creation."""
+        return asdict(self)
+    
+    @classmethod
+    def to_dataframe(cls, wfm_entries: List['WfmEntry']) -> pd.DataFrame:
+        """Convert list of WfmEntry objects to DataFrame."""
+        return pd.DataFrame([entry.to_dict() for entry in wfm_entries])
+    
+    def is_working_day(self) -> bool:
+        """Check if this entry is for a working day (has scheduled time)."""
+        return self.scheduled_time is not None
+    
+    def is_weekend_or_holiday(self) -> bool:
+        """Check if this entry is for a weekend or holiday."""
+        return self.scheduled_time is None
 
 # Utility functions for model validation
 class ModelValidator:
@@ -249,6 +276,34 @@ class ModelValidator:
             errors.append("Interaction handled time cannot be before creation time.")
         
         return errors
+    
+    @staticmethod
+    def validate_wfm_entry(wfm_entry: WfmEntry) -> List[str]:
+        """Validate WFM entry data and return list of errors."""
+        errors = []
+        
+        # Check if working day data is consistent
+        if wfm_entry.is_working_day():
+            if wfm_entry.paid_time is None:
+                errors.append("Working day missing paid_time")
+            if wfm_entry.available_time is None:
+                errors.append("Working day missing available_time")
+            if wfm_entry.interactions_time is None:
+                errors.append("Working day missing interactions_time")
+            if wfm_entry.productive_time is None:
+                errors.append("Working day missing productive_time")
+        else:
+            # Weekend/holiday should have None for all time fields except date
+            if wfm_entry.paid_time is not None:
+                errors.append("Weekend/holiday should have None for paid_time")
+            if wfm_entry.available_time is not None:
+                errors.append("Weekend/holiday should have None for available_time")
+            if wfm_entry.interactions_time is not None:
+                errors.append("Weekend/holiday should have None for interactions_time")
+            if wfm_entry.productive_time is not None:
+                errors.append("Weekend/holiday should have None for productive_time")
+        
+        return errors
 
 
 # Factory classes for creating models
@@ -274,3 +329,8 @@ class ModelFactory:
     def create_models_from_dataframe(df: pd.DataFrame, model_class) -> List:
         """Create list of model objects from DataFrame."""
         return [model_class(**row.to_dict()) for _, row in df.iterrows()]
+    
+    @staticmethod
+    def create_wfm_entry_from_dict(data: Dict[str, Any]) -> WfmEntry:
+        """Create WfmEntry model from dictionary."""
+        return WfmEntry(**data)
