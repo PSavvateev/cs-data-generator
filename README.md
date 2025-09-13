@@ -20,13 +20,14 @@ Contains support agent information.
 
 **Columns:**
 - `id`: Unique agent identifier
+- `full_name`: Agent's full name
 - `first_name`: Agent's first name
 - `last_name`: Agent's last name  
 - `fte`: Full-time equivalent (0.75 or 1.0)
 - `position`: Job position (always "support_agent")
 - `start_date`: Agent start date (YYYY-MM-DD)
 - `status`: Employment status (always "active")
-- `hourly_rate_eur`: Hourly rate in EUR (12-16 EUR based on experience)
+- `hourly_rate_eur`: Hourly rate in EUR 
 
 ### 2.2 WFM Tabe (`wfm_table.csv`)
 Contains agents specific working time metrics

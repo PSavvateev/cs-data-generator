@@ -12,6 +12,7 @@ import pandas as pd
 class User:
     """Model for support agent/user data."""
     id: int
+    full_name: str
     first_name: str
     last_name: str
     fte: float

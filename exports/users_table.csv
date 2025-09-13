@@ -1,13 +1,13 @@
-id,first_name,last_name,fte,position,start_date,status,hourly_rate_eur
-1,Patrick,Lopez,0.75,support_agent,2022-08-17,active,13.56
-2,Michelle,Fowler,0.75,support_agent,2023-07-18,active,13.54
-3,Casey,Daniels,1.0,support_agent,2022-10-13,active,14.9
-4,Kimberly,Scott,1.0,support_agent,2022-06-28,active,14.76
-5,Thomas,Hernandez,1.0,support_agent,2022-03-07,active,13.79
-6,Jennifer,Murray,1.0,support_agent,2023-03-24,active,13.67
-7,Kurt,Bell,1.0,support_agent,2022-02-24,active,14.87
-8,Chloe,West,1.0,support_agent,2024-05-09,active,13.08
-9,Christopher,Mcclain,1.0,support_agent,2023-07-24,active,14.66
-10,Ethan,Martinez,1.0,support_agent,2022-01-14,active,15.32
-11,Sharon,Jackson,1.0,support_agent,2022-11-23,active,14.77
-12,Carrie,Mcclain,1.0,support_agent,2023-11-28,active,13.42
+id,full_name,first_name,last_name,fte,position,start_date,status,hourly_rate_eur
+1,Amanda Meyers,Amanda,Meyers,0.75,support_agent,2022-08-17,active,13.56
+2,Robin Campos,Robin,Campos,0.75,support_agent,2023-07-18,active,13.54
+3,Emily Delacruz,Emily,Delacruz,1.0,support_agent,2022-10-13,active,14.9
+4,Donna Lopez,Donna,Lopez,1.0,support_agent,2022-06-28,active,14.76
+5,Gabrielle Henry,Gabrielle,Henry,1.0,support_agent,2022-03-07,active,13.79
+6,Brittany Montes,Brittany,Montes,1.0,support_agent,2023-03-24,active,13.67
+7,Jesse Hartman,Jesse,Hartman,1.0,support_agent,2022-02-24,active,14.87
+8,Michael Clark,Michael,Clark,1.0,support_agent,2024-05-09,active,13.08
+9,Jason Brown,Jason,Brown,1.0,support_agent,2023-07-24,active,14.66
+10,Stephanie Collins,Stephanie,Collins,1.0,support_agent,2022-01-14,active,15.32
+11,April Rivas,April,Rivas,1.0,support_agent,2022-11-23,active,14.77
+12,Alexandria Pham,Alexandria,Pham,1.0,support_agent,2023-11-28,active,13.42
