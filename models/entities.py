@@ -11,7 +11,7 @@ import pandas as pd
 @dataclass
 class User:
     """Model for support agent/user data."""
-    id: int
+    user_id: int
     full_name: str
     first_name: str
     last_name: str
@@ -34,7 +34,7 @@ class User:
 @dataclass
 class Customer:
     """Model for customer data."""
-    id: int
+    customer_id: int
     name: str
     email: str
     phone: str

@@ -1,13 +1,7 @@
-id,full_name,first_name,last_name,fte,position,start_date,status,hourly_rate_eur
-1,Amanda Meyers,Amanda,Meyers,0.75,support_agent,2022-08-17,active,13.56
-2,Robin Campos,Robin,Campos,0.75,support_agent,2023-07-18,active,13.54
-3,Emily Delacruz,Emily,Delacruz,1.0,support_agent,2022-10-13,active,14.9
-4,Donna Lopez,Donna,Lopez,1.0,support_agent,2022-06-28,active,14.76
-5,Gabrielle Henry,Gabrielle,Henry,1.0,support_agent,2022-03-07,active,13.79
-6,Brittany Montes,Brittany,Montes,1.0,support_agent,2023-03-24,active,13.67
-7,Jesse Hartman,Jesse,Hartman,1.0,support_agent,2022-02-24,active,14.87
-8,Michael Clark,Michael,Clark,1.0,support_agent,2024-05-09,active,13.08
-9,Jason Brown,Jason,Brown,1.0,support_agent,2023-07-24,active,14.66
-10,Stephanie Collins,Stephanie,Collins,1.0,support_agent,2022-01-14,active,15.32
-11,April Rivas,April,Rivas,1.0,support_agent,2022-11-23,active,14.77
-12,Alexandria Pham,Alexandria,Pham,1.0,support_agent,2023-11-28,active,13.42
+user_id,full_name,first_name,last_name,fte,position,start_date,status,hourly_rate_eur
+1,Brandon Jenkins,Brandon,Jenkins,0.75,support_agent,2022-08-17,active,13.56
+2,Marissa Roach,Marissa,Roach,0.75,support_agent,2023-07-18,active,13.54
+3,Jeffrey Jones,Jeffrey,Jones,1.0,support_agent,2022-10-13,active,14.9
+4,Karen Miller,Karen,Miller,1.0,support_agent,2022-06-28,active,14.76
+5,Isabel Washington,Isabel,Washington,1.0,support_agent,2022-03-07,active,13.79
+6,Matthew Nunez,Matthew,Nunez,1.0,support_agent,2023-03-24,active,13.67

@@ -11,17 +11,17 @@ class Config:
     """Main configuration class containing all generation parameters."""
     
     # Basic counts
-    NUM_TICKETS: int = 25000
+    NUM_TICKETS: int = 60000
     UNIQUE_CUSTOMERS: int = 6000
-    UNIQUE_AGENTS: int = 12
+    UNIQUE_AGENTS: int = 6
     
     # Date range
-    START_DATE: datetime = datetime(2023, 9, 15)
-    END_DATE: datetime = datetime(2025, 8, 21)
+    START_DATE: datetime = datetime(2024, 3, 15)
+    END_DATE: datetime = datetime(2025, 10, 21)
     
     # Behavior settings
-    MAX_INTERACTION_SPAN_HOURS: int = 6
-    ESCALATION_RATE: float = 0.12
+    MAX_INTERACTION_SPAN_HOURS: int = 20
+    ESCALATION_RATE: float = 0.18
     ANCHOR_CLOSURE_TO: str = 'last_interaction'  # or 'from_creation'
     
     # Random seed for reproducibility
@@ -79,9 +79,9 @@ class Config:
     # QA (Quality Assurance) parameters
     SAMPLE_SIZE: float = 0.15  # 15% of interactions get QA evaluated
     QA_SCORE_PARAMS: Dict[str, float] = None
-    CUSTOMER_CRITICAL_PROB: float = 0.08  # 8% probability
+    CUSTOMER_CRITICAL_PROB: float = 0.07  # 8% probability
     BUSINESS_CRITICAL_PROB: float = 0.05   # 5% probability  
-    COMPLIANCE_CRITICAL_PROB: float = 0.03 # 3% probability
+    COMPLIANCE_CRITICAL_PROB: float = 0.02 # 3% probability
     
     def __post_init__(self):
         """Initialize default values that can't be set as class defaults."""
@@ -125,12 +125,12 @@ class Config:
         
         if self.SYMPTOM_FCR_RATES is None:
             self.SYMPTOM_FCR_RATES = {
-                'troubleshooting': {'mean': 0.50, 'deviation': 0.03},
-                'finance': {'mean': 0.00, 'deviation': 0.01},
-                'logistics': {'mean': 0.43, 'deviation': 0.04},
-                'rma': {'mean': 0.10, 'deviation': 0.12},
-                'product': {'mean': 1.00, 'deviation': 0.12},
-                'complaint': {'mean': 0.20, 'deviation': 0.12}
+                'troubleshooting': {'mean': 0.80, 'deviation': 0.12},
+                'finance': {'mean': 0.10, 'deviation': 0.12},
+                'logistics': {'mean': 0.59, 'deviation': 0.15},
+                'rma': {'mean': 0.30, 'deviation': 0.12},
+                'product': {'mean': 1.00, 'deviation': 0.2},
+                'complaint': {'mean': 0.7, 'deviation': 0.10}
             }
         
         if self.SYMPTOM_CPC_PARAMS is None:
@@ -186,9 +186,9 @@ class Config:
         
         if self.HANDLE_TIME_PARAMS is None:
             self.HANDLE_TIME_PARAMS = {
-                'email': (0.5, 45, 7),
-                'phone': (0.7, 8, 5.5),
-                'chat': (1, 60, 13)
+                'email': (0.5, 20, 5),
+                'phone': (0.7, 8, 2.2),
+                'chat': (1, 16, 9)
             }
         
         if self.SYMPTOM_HANDLE_TIME_MODIFIERS is None:
@@ -203,22 +203,22 @@ class Config:
         
         if self.SPEED_ANSWER_PARAMS is None:
             self.SPEED_ANSWER_PARAMS = {
-                'email': (0.1, 50, 17),  # hours
-                'phone': (3, 360, 60),   # seconds
-                'chat': (5, 360, 85)     # seconds
+                'email': (0.1, 30, 12),  # hours
+                'phone': (3, 70, 50),   # seconds
+                'chat': (5, 200, 85)     # seconds
             }
         
         if self.WFM_PARAMS is None:
             self.WFM_PARAMS = {
-                'shrinkage': {'mean': 0.85, 'deviation': 0.05},     # Available time factor
-                'occupancy': {'mean': 0.75, 'deviation': 0.08},    # Interactions time factor  
-                'utilization': {'mean': 0.70, 'deviation': 0.06}   # Productive time factor
+                'shrinkage': {'mean': 0.85, 'deviation': 0.5},     # Available time factor
+                'occupancy': {'mean': 0.60, 'deviation': 0.6},    # Interactions time factor  
+                'utilization': {'mean': 0.91, 'deviation': 0.23}   # Productive time factor
             }
 
         if self.QA_SCORE_PARAMS is None:
             self.QA_SCORE_PARAMS = {
-                'mean': 0.95,
+                'mean': 0.98,
                 'max': 1.00, 
-                'std': 0.07,
+                'std': 0.04,
                 'min': 0.0  # Adding min for completeness
             }

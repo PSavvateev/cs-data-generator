@@ -28,7 +28,7 @@ class CustomerGenerator(BaseGenerator):
             
             # Create Customer model
             customer = Customer(
-                id=customer_id,
+                customer_id=customer_id,
                 name=name,
                 email=email,
                 phone=phone,
@@ -40,7 +40,7 @@ class CustomerGenerator(BaseGenerator):
         # Convert to DataFrame
         df = Customer.to_dataframe(customers)
         
-        expected_columns = ['id', 'name', 'email', 'phone', 'country']
+        expected_columns = ['customer_id', 'name', 'email', 'phone', 'country']
         self._validate_output(df, expected_columns)
         self._log_generation_stats(df, "Customers")
         
@@ -61,7 +61,7 @@ class CustomerGenerator(BaseGenerator):
             country = weighted_choice(self.config.COUNTRIES)
             
             customer = Customer(
-                id=customer_id,
+                customer_id=customer_id,
                 name=name,
                 email=email,
                 phone=phone,

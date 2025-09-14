@@ -36,7 +36,7 @@ class UserGenerator(BaseGenerator):
             
             # Create User model
             user = User(
-                id=user_id,
+                user_id=user_id,
                 full_name=full_name,
                 first_name=first_name,
                 last_name=last_name,
@@ -65,7 +65,7 @@ class UserGenerator(BaseGenerator):
         # Convert to DataFrame
         df = User.to_dataframe(users)
         
-        expected_columns = ['id', 'full_name', 'first_name', 'last_name', 'fte', 'position', 
+        expected_columns = ['user_id', 'full_name', 'first_name', 'last_name', 'fte', 'position', 
                            'start_date', 'status', 'hourly_rate_eur']
         self._validate_output(df, expected_columns)
         self._log_generation_stats(df, "Users")
@@ -90,7 +90,7 @@ class UserGenerator(BaseGenerator):
             hourly_rate_eur = calculate_hourly_rate(start_date)
             
             user = User(
-                id=user_id,
+                user_id=user_id,
                 full_name=full_name,
                 first_name=first_name,
                 last_name=last_name,

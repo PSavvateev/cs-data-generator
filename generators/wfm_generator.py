@@ -22,7 +22,7 @@ class WfmGenerator(BaseGenerator):
         calendar_dates = self._get_calendar_dates()
         
         for _, user_row in users_df.iterrows():
-            user_id = user_row['id']
+            user_id = user_row['user_id']
             fte = user_row['fte']
             user_start_date = pd.to_datetime(user_row['start_date'])
 
